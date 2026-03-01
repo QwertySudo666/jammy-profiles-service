@@ -1,0 +1,17 @@
+services:
+  jammy-profile-postgres:
+    image: postgres:17
+    restart: always             # Ensures the container restarts automatically if it fails
+    environment:
+      POSTGRES_USER: postgres   # Sets the default database user
+      POSTGRES_PASSWORD: password # Sets the user's password
+      POSTGRES_DB: jammy-profile-db   # Sets the default database name
+#    volumes:
+#      - postgres-data:/var/lib/postgresql/data # Persists data to a named volume
+    ports:
+      - "5432:5432"             # Maps local port 5432 to the container's port 5432
+
+#volumes:
+#  postgres-data:
+#    driver: local
+
