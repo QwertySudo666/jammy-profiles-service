@@ -1,0 +1,32 @@
+name: Professional Quarkus Pipeline
+
+on: [push, pull_request]
+
+jobs:
+  pipeline:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Java 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+          cache: maven
+
+      # STEP 1: LINT & COMPILE (Fail fast if code is broken)
+      - name: Compile & Checkstyle
+        run: ./mvnw compile checkstyle:check
+
+      # STEP 2: UNIT TESTS
+      - name: Run Unit Tests
+        run: ./mvnw test
+
+      # STEP 3: INTEGRATION TESTS (The Postgres stuff)
+      - name: Run Integration Tests
+        run: ./mvnw verify -Dquarkus.hibernate-orm.database.generation=none
+
+      # STEP 4: PACKAGE (Store the result)
+      - name: Package Application
+        run: ./mvnw package -DskipTests
