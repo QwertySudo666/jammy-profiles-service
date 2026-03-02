@@ -1,4 +1,3 @@
 package jammy.platform.requests;
 
-public record ProfileCreateRequest(String name) {
-}
+public record ProfileCreateRequest(String name) {}

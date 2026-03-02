@@ -1,6 +1,6 @@
 name: Professional Quarkus Pipeline
 
-on: [push, pull_request]
+on: [ push, pull_request ]
 
 jobs:
   pipeline:
@@ -15,9 +15,9 @@ jobs:
           distribution: 'temurin'
           cache: maven
 
-      # STEP 1: LINT & COMPILE (Fail fast if code is broken)
-      - name: Compile & Checkstyle
-        run: ./mvnw compile checkstyle:check
+      # STEP 1: LINT & STATIC ANALYSIS
+      - name: Code Quality (Spotless)
+        run: ./mvnw spotless:check
 
       # STEP 2: UNIT TESTS
       - name: Run Unit Tests
@@ -25,8 +25,15 @@ jobs:
 
       # STEP 3: INTEGRATION TESTS (The Postgres stuff)
       - name: Run Integration Tests
-        run: ./mvnw verify -Dquarkus.hibernate-orm.database.generation=none
+        run: ./mvnw verify -DskipUnitTests -Dquarkus.hibernate-orm.database.generation=none
 
-      # STEP 4: PACKAGE (Store the result)
-      - name: Package Application
-        run: ./mvnw package -DskipTests
+#      # STEP 4: PACKAGE (Store the result)
+#      - name: Package Application
+#        run: ./mvnw package -DskipTests
+
+      # STEP 4: ARTIFACT UPLOAD (Зберігаємо результат збирання)
+      - name: Upload Build Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: quarkus-app
+          path: target/quarkus-app/
