@@ -1,4 +1,4 @@
-name: Professional Quarkus Pipeline
+name: jammy-profiles-service pipeline
 
 on: [ push, pull_request ]
 
