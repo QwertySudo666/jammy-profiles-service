@@ -1,5 +1,6 @@
 package jammy.platform.services;
 
+import io.quarkus.panache.common.Sort;
 import jakarta.inject.Singleton;
 import jakarta.transaction.Transactional;
 import jammy.platform.entities.GenreEntity;
@@ -57,15 +58,13 @@ public class ProfileService {
     return mapToResponse(profile);
   }
 
-  // --- Mappers (Clean & Isolated) ---
-
-  // Add to ProfileService.java
-  public PagedResponse<ProfileResponse> findAll(int page, int size) {
-    // Basic validation
+  public PagedResponse<ProfileResponse> findAll(
+      int page, int size, String sort, Sort.Direction direction) {
     int pageSize = (size <= 0 || size > 100) ? 20 : size;
     int pageNum = Math.max(0, page);
 
-    PagedResponse<ProfileEntity> response = profileRepository.findAll(pageNum, pageSize);
+    PagedResponse<ProfileEntity> response =
+        profileRepository.findAll(pageNum, pageSize, sort, direction);
     return new PagedResponse<ProfileResponse>(
         response.data().stream().map(ProfileService::mapToResponse).toList(),
         response.totalCount(),

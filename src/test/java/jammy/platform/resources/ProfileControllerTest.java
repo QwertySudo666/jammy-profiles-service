@@ -175,6 +175,8 @@ public class ProfileControllerTest {
         given()
             .queryParam("page", 0)
             .queryParam("size", 2)
+            .queryParam("sort", "name")
+            .queryParam("direction", "Ascending")
             .when()
             .get(basicPath)
             .then()

@@ -1,6 +1,7 @@
 package jammy.platform.repositories.impl;
 
 import io.quarkus.hibernate.orm.panache.PanacheRepositoryBase;
+import io.quarkus.panache.common.Sort;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.transaction.Transactional;
 import jammy.platform.entities.ProfileEntity;
@@ -26,8 +27,9 @@ public class ProfileRepositoryImpl
   }
 
   @Override
-  public PagedResponse<ProfileEntity> findAll(int page, int size) {
-    var query = findAll();
+  public PagedResponse<ProfileEntity> findAll(
+      int page, int size, String sort, Sort.Direction direction) {
+    var query = findAll(Sort.by(sort, direction));
     var pagedQuery = query.page(page, size);
     var pageCount = query.pageCount();
 

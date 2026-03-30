@@ -1,5 +1,6 @@
 package jammy.platform.resources;
 
+import io.quarkus.panache.common.Sort;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
@@ -35,8 +36,10 @@ public class ProfileController {
   @GET
   public PagedResponse<ProfileResponse> getAll(
       @QueryParam("page") @DefaultValue("0") int page,
-      @QueryParam("size") @DefaultValue("20") int size) {
-    return profileService.findAll(page, size);
+      @QueryParam("size") @DefaultValue("20") int size,
+      @QueryParam("sort") @DefaultValue("id") String sort,
+      @QueryParam("direction") @DefaultValue("Ascending") Sort.Direction direction) {
+    return profileService.findAll(page, size, sort, direction);
   }
 
   @PUT
