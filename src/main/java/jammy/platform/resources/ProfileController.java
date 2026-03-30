@@ -11,9 +11,9 @@ import jammy.platform.services.ProfileService;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
 
-@Path("/profiles") // The base URL for all methods in this class
-@Produces(MediaType.APPLICATION_JSON) // We always send JSON
-@Consumes(MediaType.APPLICATION_JSON) // We always receive JSON
+@Path("/profiles")
+@Produces(MediaType.APPLICATION_JSON)
+@Consumes(MediaType.APPLICATION_JSON)
 @AllArgsConstructor
 public class ProfileController {
 
@@ -21,18 +21,14 @@ public class ProfileController {
 
   @POST
   public Response createProfile(ProfileCreateRequest request) {
-    // 1. Call the service to do the work
     ProfileResponse response = profileService.create(request);
 
-    // 2. Return HTTP 201 (Created) with the body
     return Response.status(Response.Status.CREATED).entity(response).build();
   }
 
   @GET
   @Path("/{id}")
   public ProfileResponse getProfile(@PathParam("id") UUID id) {
-    // Quarkus is smart: if the service throws an exception,
-    // it will catch it. If it returns a result, it sends 200 OK.
     return profileService.findById(id);
   }
 
@@ -46,7 +42,7 @@ public class ProfileController {
   @PUT
   @Path("/{id}")
   public Response update(@PathParam("id") UUID id, ProfileUpdateRequest request) {
-    profileService.update(id, request);
-    return Response.noContent().build(); // 204 No Content is standard for updates
+    ProfileResponse response = profileService.update(id, request);
+    return Response.ok().entity(response).build();
   }
 }

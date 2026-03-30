@@ -1,15 +1,15 @@
 package jammy.platform.repositories;
 
-import jammy.platform.models.Profile;
+import jammy.platform.entities.ProfileEntity;
 import jammy.platform.responses.PagedResponse;
 import java.util.UUID;
 
 public interface ProfileRepository {
-  public Profile create(Profile profile);
+  ProfileEntity create(ProfileEntity profile);
 
-  public void update(Profile profile);
+  ProfileEntity update(ProfileEntity profile);
 
-  public PagedResponse<Profile> findAll(int page, int size);
+  PagedResponse<ProfileEntity> findAll(int page, int size);
 
-  public Profile findById(UUID profileId);
+  ProfileEntity findById(UUID profileId);
 }
