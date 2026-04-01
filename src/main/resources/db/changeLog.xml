@@ -8,4 +8,5 @@
     https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
 
     <includeAll path="db/changesets"/>
+    <include file="db/test-data/1774911908_insert_test_data.sql" context="dev"/>
 </databaseChangeLog>

@@ -16,4 +16,16 @@ public class GenreRepositoryImpl
 
     return list("name in :names", Map.of("names", names));
   }
+
+  @Override
+  public GenreEntity create(String name) {
+    GenreEntity e = new GenreEntity(UUID.randomUUID(), name);
+    persist(e);
+    return e;
+  }
+
+  @Override
+  public void delete(UUID id) {
+    deleteById(id);
+  }
 }

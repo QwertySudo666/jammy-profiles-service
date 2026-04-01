@@ -19,4 +19,16 @@ public class InstrumentRepositoryImpl
 
     return list("name in :names", Map.of("names", names));
   }
+
+  @Override
+  public InstrumentEntity create(String name) {
+    InstrumentEntity e = new InstrumentEntity(UUID.randomUUID(), name);
+    persist(e);
+    return e;
+  }
+
+  @Override
+  public void delete(UUID id) {
+    deleteById(id);
+  }
 }

@@ -7,6 +7,7 @@ import jammy.platform.entities.GenreEntity;
 import jammy.platform.entities.InstrumentEntity;
 import jammy.platform.entities.ProfileEntity;
 import jammy.platform.enums.SkillLevel;
+import jammy.platform.models.SearchFilter;
 import jammy.platform.repositories.GenreRepository;
 import jammy.platform.repositories.InstrumentRepository;
 import jammy.platform.repositories.ProfileRepository;
@@ -59,12 +60,12 @@ public class ProfileService {
   }
 
   public PagedResponse<ProfileResponse> findAll(
-      int page, int size, String sort, Sort.Direction direction) {
+      SearchFilter filter, int page, int size, String sort, Sort.Direction direction) {
     int pageSize = (size <= 0 || size > 100) ? 20 : size;
     int pageNum = Math.max(0, page);
 
     PagedResponse<ProfileEntity> response =
-        profileRepository.findAll(pageNum, pageSize, sort, direction);
+        profileRepository.findAll(filter, pageNum, pageSize, sort, direction);
     return new PagedResponse<ProfileResponse>(
         response.data().stream().map(ProfileService::mapToResponse).toList(),
         response.totalCount(),
@@ -104,7 +105,8 @@ public class ProfileService {
     SkillLevel skill = request.skill();
     int yearsOfExperience = request.yearsOfExperience();
     String description = request.description();
-    Instant dateOfBirth = request.dateOfBirth().toInstant();
+    Instant dateOfBirth =
+        (request.dateOfBirth() != null) ? request.dateOfBirth().toInstant() : null;
     return ProfileEntity.builder()
         .id(UUID.randomUUID())
         .name(name)
@@ -126,6 +128,11 @@ public class ProfileService {
     Set<String> genres =
         profile.getGenres().stream().map(GenreEntity::getName).collect(Collectors.toSet());
 
+    OffsetDateTime dateOfBirth =
+        (profile.getDateOfBirth() != null)
+            ? OffsetDateTime.ofInstant(profile.getDateOfBirth(), ZoneOffset.UTC)
+            : null;
+
     return new ProfileResponse(
         profile.getId(),
         profile.getName(),
@@ -133,7 +140,7 @@ public class ProfileService {
         profile.getSkill(),
         profile.getYearsOfExperience(),
         profile.getDescription(),
-        OffsetDateTime.ofInstant(profile.getDateOfBirth(), ZoneOffset.UTC),
+        dateOfBirth,
         instruments,
         genres
         //                profile.getMedia(),

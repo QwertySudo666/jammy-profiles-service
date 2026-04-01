@@ -1,16 +1,18 @@
 package jammy.platform.models;
 
-import jammy.platform.entities.InstrumentEntity;
-import jammy.platform.entities.ProfileEntity;
 import jammy.platform.enums.SkillLevel;
-import java.util.Set;
+import java.util.List;
+import lombok.Builder;
+import lombok.Getter;
 
+@Builder
+@Getter
 public class SearchFilter {
-  private ProfileEntity profile;
   private String name;
-  private String targetLocation;
-  private SkillLevel targetSkill;
+  private String location;
+  private SkillLevel skill;
   private Integer minExperience;
-  private Boolean isActive;
-  private Set<InstrumentEntity> targetInstrumentEntities;
+  private Integer minAge;
+  private List<String> instruments;
+  private List<String> genres;
 }
