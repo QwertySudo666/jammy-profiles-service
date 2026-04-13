@@ -2,14 +2,17 @@ package jammy.platform.services;
 
 import io.quarkus.panache.common.Sort;
 import jakarta.inject.Singleton;
+import jakarta.persistence.*;
 import jakarta.transaction.Transactional;
 import jammy.platform.entities.GenreEntity;
 import jammy.platform.entities.InstrumentEntity;
+import jammy.platform.entities.MediaMetadataEntity;
 import jammy.platform.entities.ProfileEntity;
 import jammy.platform.enums.SkillLevel;
 import jammy.platform.models.SearchFilter;
 import jammy.platform.repositories.GenreRepository;
 import jammy.platform.repositories.InstrumentRepository;
+import jammy.platform.repositories.MediaMetadataRepository;
 import jammy.platform.repositories.ProfileRepository;
 import jammy.platform.requests.ProfileCreateRequest;
 import jammy.platform.requests.ProfileUpdateRequest;
@@ -29,6 +32,7 @@ public class ProfileService {
   private final ProfileRepository profileRepository;
   private final InstrumentRepository instrumentRepository;
   private final GenreRepository genreRepository;
+  private final MediaMetadataRepository mediaRepository;
 
   /**
    * Orchestrates the creation of a new profile. Generates the ID here so the service (business
@@ -39,9 +43,15 @@ public class ProfileService {
     List<InstrumentEntity> instrumentEntities =
         instrumentRepository.findByNameIn(request.instruments());
     List<GenreEntity> genreEntities = genreRepository.findByNameIn(request.genres());
-    ProfileEntity profile =
-        mapToDomain(request, new HashSet<>(instrumentEntities), new HashSet<>(genreEntities));
+
+    ProfileEntity profile = mapToDomain(request);
+    profile.setInstruments(new HashSet<>(instrumentEntities));
+    profile.setGenres(new HashSet<>(genreEntities));
+    if (request.imageUrl() != null) {
+      profile.setAvatar(request.imageUrl());
+    }
     ProfileEntity created = profileRepository.create(profile);
+
     return mapToResponse(created);
   }
 
@@ -83,23 +93,36 @@ public class ProfileService {
         new HashSet<>(instrumentRepository.findByNameIn(request.instruments()));
     Set<GenreEntity> genreEntities = new HashSet<>(genreRepository.findByNameIn(request.genres()));
 
+    OffsetDateTime dateOfBirth = request.dateOfBirth();
+
     existing.setName(request.name());
     existing.setLocation(request.location());
     existing.setSkill(request.skill());
     existing.setYearsOfExperience(request.yearsOfExperience());
     existing.setDescription(request.description());
-    existing.setDateOfBirth(request.dateOfBirth().toInstant());
     existing.setInstruments(instrumentEntities);
     existing.setGenres(genreEntities);
+
+    if (dateOfBirth != null) {
+      existing.setDateOfBirth(dateOfBirth.toInstant());
+    }
+
+    if (request.imageUrl() != null) {
+      updateAvatar(existing, request.imageUrl());
+    }
 
     ProfileEntity updated = profileRepository.update(existing);
     return mapToResponse(updated);
   }
 
-  private static ProfileEntity mapToDomain(
-      ProfileCreateRequest request,
-      Set<InstrumentEntity> instrumentEntities,
-      Set<GenreEntity> genreEntities) {
+  private void updateAvatar(ProfileEntity profile, String newUrl) {
+    profile.getMedia().stream()
+        .filter(MediaMetadataEntity::getIsPrimary)
+        .findFirst()
+        .ifPresentOrElse(avatar -> avatar.setUrl(newUrl), () -> profile.setAvatar(newUrl));
+  }
+
+  private static ProfileEntity mapToDomain(ProfileCreateRequest request) {
     String name = request.name();
     String location = request.location();
     SkillLevel skill = request.skill();
@@ -115,8 +138,6 @@ public class ProfileService {
         .yearsOfExperience(yearsOfExperience)
         .description(description)
         .dateOfBirth(dateOfBirth)
-        .instruments(instrumentEntities)
-        .genres(genreEntities)
         .build();
   }
 
@@ -133,6 +154,13 @@ public class ProfileService {
             ? OffsetDateTime.ofInstant(profile.getDateOfBirth(), ZoneOffset.UTC)
             : null;
 
+    String avatarUrl =
+        profile.getMedia().stream()
+            .filter(MediaMetadataEntity::getIsPrimary)
+            .findFirst()
+            .map(MediaMetadataEntity::getUrl)
+            .orElse(null);
+
     return new ProfileResponse(
         profile.getId(),
         profile.getName(),
@@ -142,7 +170,8 @@ public class ProfileService {
         profile.getDescription(),
         dateOfBirth,
         instruments,
-        genres
+        genres,
+        avatarUrl
         //                profile.getMedia(),
         //                profile.getLinks()
         );

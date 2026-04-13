@@ -14,7 +14,8 @@ public record ProfileResponse(
     String description,
     OffsetDateTime dateOfBirth,
     Set<String> instruments,
-    Set<String> genres
+    Set<String> genres,
+    String avatarUrl
     //        List<MediaMetadata> media,
     //        List<ProfileLink> links
     ) {}

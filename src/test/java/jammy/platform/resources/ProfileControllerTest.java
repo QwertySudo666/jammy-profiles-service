@@ -112,7 +112,8 @@ public class ProfileControllerTest {
         "Description",
         OffsetDateTime.parse("2000-01-01T00:00:00Z"),
         new HashSet<>(Set.of("GUITAR")),
-        new HashSet<>(Set.of("METAL")));
+        new HashSet<>(Set.of("METAL")),
+        "img/url/test.png");
   }
 
   @Test
@@ -142,6 +143,7 @@ public class ProfileControllerTest {
     assertThat(response.dateOfBirth(), is(request.dateOfBirth()));
     assertThat(response.instruments(), is(request.instruments()));
     assertThat(response.genres(), is(request.genres()));
+    assertThat(response.avatarUrl(), is("img/url/test.png"));
   }
 
   @Test
@@ -184,7 +186,8 @@ public class ProfileControllerTest {
             "New desc",
             OffsetDateTime.now(),
             Set.of("DRUMS"),
-            Set.of("ROCK"));
+            Set.of("ROCK"),
+            "img/url/test.png");
 
     ProfileResponse response =
         given()
@@ -206,6 +209,7 @@ public class ProfileControllerTest {
     assertThat(response.dateOfBirth().toInstant(), is(request.dateOfBirth().toInstant()));
     assertThat(response.instruments(), is(request.instruments()));
     assertThat(response.genres(), is(request.genres()));
+    assertThat(response.avatarUrl(), is("img/url/test.png"));
   }
 
   @Test

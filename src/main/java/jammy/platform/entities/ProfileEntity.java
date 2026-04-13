@@ -3,6 +3,7 @@ package jammy.platform.entities;
 import jakarta.persistence.*;
 import jammy.platform.enums.SkillLevel;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
@@ -54,4 +55,20 @@ public class ProfileEntity {
 
   @OneToMany(mappedBy = "profile", cascade = CascadeType.ALL, orphanRemoval = true)
   private List<ProfileLinkEntity> links;
+
+  public void setAvatar(String url) {
+    MediaMetadataEntity avatar =
+        MediaMetadataEntity.builder()
+            .id(UUID.randomUUID())
+            .url(url)
+            .type("IMAGE")
+            .isPrimary(true)
+            .profile(this)
+            .build();
+
+    if (this.media == null) {
+      this.media = new ArrayList<>();
+    }
+    this.media.add(avatar);
+  }
 }

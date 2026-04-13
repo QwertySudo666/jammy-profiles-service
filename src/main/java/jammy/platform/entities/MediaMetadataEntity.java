@@ -2,13 +2,15 @@ package jammy.platform.entities;
 
 import jakarta.persistence.*;
 import java.util.UUID;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 @Entity
 @Table(name = "media_metadata")
 @Getter
 @Setter
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class MediaMetadataEntity {
   @Id private UUID id;
 
@@ -20,5 +22,5 @@ public class MediaMetadataEntity {
   private String url;
 
   @Column(name = "is_primary")
-  private Boolean isPrimary;
+  private Boolean isPrimary = false;
 }

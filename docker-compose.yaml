@@ -1,5 +1,6 @@
 services:
   jammy-profile-postgres:
+    container_name: jammy-profile-db
     image: postgres:17
     restart: always             # Ensures the container restarts automatically if it fails
     environment:
@@ -15,3 +16,16 @@ services:
 #  postgres-data:
 #    driver: local
 
+  localstack:
+    container_name: localstack
+    image: localstack/localstack:2.2.0
+    environment:
+      - AWS_ACCESS_KEY_ID=test-key
+      - AWS_SECRET_ACCESS_KEY=test-secret
+      - AWS_DEFAULT_REGION=us-east-1
+    ports:
+      - "4566:4566"
+    env_file:
+      - .env
+    volumes:
+      - ./localstack/init:/etc/localstack/init/ready.d

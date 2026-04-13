@@ -12,4 +12,5 @@ public record ProfileCreateRequest(
     String description,
     OffsetDateTime dateOfBirth,
     Set<String> instruments,
-    Set<String> genres) {}
+    Set<String> genres,
+    String imageUrl) {}
