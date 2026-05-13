@@ -7,10 +7,8 @@ import jammy.platform.exceptions.ProfileAlreadyExistsException;
 
 @Provider
 public class ProfileAlreadyExistsMapper implements ExceptionMapper<ProfileAlreadyExistsException> {
-    @Override
-    public Response toResponse(ProfileAlreadyExistsException exception) {
-        return Response.status(Response.Status.CONFLICT)
-                .entity(exception.getMessage())
-                .build();
-    }
+  @Override
+  public Response toResponse(ProfileAlreadyExistsException exception) {
+    return Response.status(Response.Status.CONFLICT).entity(exception.getMessage()).build();
+  }
 }

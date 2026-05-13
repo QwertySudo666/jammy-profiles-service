@@ -5,8 +5,6 @@ import jakarta.inject.Singleton;
 import jakarta.persistence.*;
 import jakarta.transaction.Transactional;
 import jakarta.ws.rs.NotFoundException;
-import jakarta.ws.rs.WebApplicationException;
-import jakarta.ws.rs.core.Response;
 import jammy.platform.entities.GenreEntity;
 import jammy.platform.entities.InstrumentEntity;
 import jammy.platform.entities.MediaMetadataEntity;
@@ -21,7 +19,6 @@ import jammy.platform.repositories.MediaMetadataRepository;
 import jammy.platform.repositories.ProfileRepository;
 import jammy.platform.requests.ProfileCreateRequest;
 import jammy.platform.requests.ProfileUpdateRequest;
-import jammy.platform.responses.MyProfileStatusResponse;
 import jammy.platform.responses.PagedResponse;
 import jammy.platform.responses.ProfileResponse;
 import java.time.Instant;
@@ -98,7 +95,8 @@ public class ProfileService {
   public ProfileResponse update(UUID userId, UUID profileId, ProfileUpdateRequest request) {
     ProfileEntity existing = profileRepository.findById(profileId);
     if (existing == null) throw new NotFoundException("Not found");
-    if(!existing.getUserId().equals(userId)) throw new ProfileAccessDeniedException("You can edit only your profile");
+    if (!existing.getUserId().equals(userId))
+      throw new ProfileAccessDeniedException("You can edit only your profile");
 
     Set<InstrumentEntity> instrumentEntities =
         new HashSet<>(instrumentRepository.findByNameIn(request.instruments()));
@@ -127,9 +125,7 @@ public class ProfileService {
   }
 
   public UUID findByUserId(UUID userId) {
-    return profileRepository.findByUserId(userId)
-            .map(ProfileEntity::getId)
-            .orElse(null);
+    return profileRepository.findByUserId(userId).map(ProfileEntity::getId).orElse(null);
   }
 
   private void updateAvatar(ProfileEntity profile, String newUrl) {

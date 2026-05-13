@@ -4,7 +4,6 @@ import io.quarkus.panache.common.Sort;
 import jammy.platform.entities.ProfileEntity;
 import jammy.platform.models.SearchFilter;
 import jammy.platform.responses.PagedResponse;
-
 import java.util.Optional;
 import java.util.UUID;
 
