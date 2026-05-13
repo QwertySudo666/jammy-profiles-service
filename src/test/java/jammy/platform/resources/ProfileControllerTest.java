@@ -12,6 +12,9 @@ import io.quarkus.narayana.jta.QuarkusTransaction;
 import io.quarkus.panache.common.Sort;
 import io.quarkus.test.TestTransaction;
 import io.quarkus.test.junit.QuarkusTest;
+import io.quarkus.test.security.TestSecurity;
+import io.quarkus.test.security.oidc.Claim;
+import io.quarkus.test.security.oidc.OidcSecurity;
 import io.restassured.common.mapper.TypeRef;
 import io.restassured.http.ContentType;
 import jammy.platform.entities.GenreEntity;
@@ -36,6 +39,10 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
 @QuarkusTest
+@TestSecurity(
+    user = "default-user",
+    roles = {"USER"})
+@OidcSecurity(claims = {@Claim(key = "sub", value = "123e4567-e89b-12d3-a456-426614174000")})
 @AllArgsConstructor
 public class ProfileControllerTest {
 
@@ -70,6 +77,7 @@ public class ProfileControllerTest {
               ProfileEntity entity =
                   ProfileEntity.builder()
                       .id(UUID.randomUUID())
+                      .userId(UUID.fromString("123e4567-e89b-12d3-a456-426614174000"))
                       .name(name)
                       .location("Lviv")
                       .skill(SkillLevel.INTERMEDIATE)
