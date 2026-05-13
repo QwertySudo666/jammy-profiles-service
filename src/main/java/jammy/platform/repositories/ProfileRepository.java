@@ -4,6 +4,8 @@ import io.quarkus.panache.common.Sort;
 import jammy.platform.entities.ProfileEntity;
 import jammy.platform.models.SearchFilter;
 import jammy.platform.responses.PagedResponse;
+
+import java.util.Optional;
 import java.util.UUID;
 
 public interface ProfileRepository {
@@ -17,4 +19,8 @@ public interface ProfileRepository {
   ProfileEntity findById(UUID profileId);
 
   void delete(UUID profileId);
+
+  boolean existsByUserId(UUID userId);
+
+  Optional<ProfileEntity> findByUserId(UUID userId);
 }

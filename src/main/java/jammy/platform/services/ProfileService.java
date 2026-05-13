@@ -4,11 +4,16 @@ import io.quarkus.panache.common.Sort;
 import jakarta.inject.Singleton;
 import jakarta.persistence.*;
 import jakarta.transaction.Transactional;
+import jakarta.ws.rs.NotFoundException;
+import jakarta.ws.rs.WebApplicationException;
+import jakarta.ws.rs.core.Response;
 import jammy.platform.entities.GenreEntity;
 import jammy.platform.entities.InstrumentEntity;
 import jammy.platform.entities.MediaMetadataEntity;
 import jammy.platform.entities.ProfileEntity;
 import jammy.platform.enums.SkillLevel;
+import jammy.platform.exceptions.ProfileAccessDeniedException;
+import jammy.platform.exceptions.ProfileAlreadyExistsException;
 import jammy.platform.models.SearchFilter;
 import jammy.platform.repositories.GenreRepository;
 import jammy.platform.repositories.InstrumentRepository;
@@ -16,6 +21,7 @@ import jammy.platform.repositories.MediaMetadataRepository;
 import jammy.platform.repositories.ProfileRepository;
 import jammy.platform.requests.ProfileCreateRequest;
 import jammy.platform.requests.ProfileUpdateRequest;
+import jammy.platform.responses.MyProfileStatusResponse;
 import jammy.platform.responses.PagedResponse;
 import jammy.platform.responses.ProfileResponse;
 import java.time.Instant;
@@ -39,12 +45,16 @@ public class ProfileService {
    * logic) owns the identity, not the database.
    */
   @Transactional
-  public ProfileResponse create(ProfileCreateRequest request) {
+  public ProfileResponse create(UUID userId, ProfileCreateRequest request) {
+    if (profileRepository.existsByUserId(userId)) {
+      throw new ProfileAlreadyExistsException();
+    }
+
     List<InstrumentEntity> instrumentEntities =
         instrumentRepository.findByNameIn(request.instruments());
     List<GenreEntity> genreEntities = genreRepository.findByNameIn(request.genres());
 
-    ProfileEntity profile = mapToDomain(request);
+    ProfileEntity profile = mapToDomain(userId, request);
     profile.setInstruments(new HashSet<>(instrumentEntities));
     profile.setGenres(new HashSet<>(genreEntities));
     if (request.imageUrl() != null) {
@@ -85,9 +95,10 @@ public class ProfileService {
   }
 
   @Transactional
-  public ProfileResponse update(UUID id, ProfileUpdateRequest request) {
-    ProfileEntity existing = profileRepository.findById(id);
-    if (existing == null) throw new NoSuchElementException("Not found");
+  public ProfileResponse update(UUID userId, UUID profileId, ProfileUpdateRequest request) {
+    ProfileEntity existing = profileRepository.findById(profileId);
+    if (existing == null) throw new NotFoundException("Not found");
+    if(!existing.getUserId().equals(userId)) throw new ProfileAccessDeniedException("You can edit only your profile");
 
     Set<InstrumentEntity> instrumentEntities =
         new HashSet<>(instrumentRepository.findByNameIn(request.instruments()));
@@ -115,6 +126,12 @@ public class ProfileService {
     return mapToResponse(updated);
   }
 
+  public UUID findByUserId(UUID userId) {
+    return profileRepository.findByUserId(userId)
+            .map(ProfileEntity::getId)
+            .orElse(null);
+  }
+
   private void updateAvatar(ProfileEntity profile, String newUrl) {
     profile.getMedia().stream()
         .filter(MediaMetadataEntity::getIsPrimary)
@@ -122,7 +139,7 @@ public class ProfileService {
         .ifPresentOrElse(avatar -> avatar.setUrl(newUrl), () -> profile.setAvatar(newUrl));
   }
 
-  private static ProfileEntity mapToDomain(ProfileCreateRequest request) {
+  private static ProfileEntity mapToDomain(UUID userId, ProfileCreateRequest request) {
     String name = request.name();
     String location = request.location();
     SkillLevel skill = request.skill();
@@ -132,6 +149,7 @@ public class ProfileService {
         (request.dateOfBirth() != null) ? request.dateOfBirth().toInstant() : null;
     return ProfileEntity.builder()
         .id(UUID.randomUUID())
+        .userId(userId)
         .name(name)
         .location(location)
         .skill(skill)

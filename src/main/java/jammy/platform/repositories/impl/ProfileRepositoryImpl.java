@@ -12,6 +12,7 @@ import java.time.Instant;
 import java.time.ZoneOffset;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 
 @ApplicationScoped
@@ -94,5 +95,15 @@ public class ProfileRepositoryImpl
   @Override
   public void delete(UUID profileId) {
     deleteById(profileId);
+  }
+
+  @Override
+  public boolean existsByUserId(UUID userId) {
+    return count("userId", userId) > 0;
+  }
+
+  @Override
+  public Optional<ProfileEntity> findByUserId(UUID userId) {
+    return find("userId", userId).firstResultOptional();
   }
 }

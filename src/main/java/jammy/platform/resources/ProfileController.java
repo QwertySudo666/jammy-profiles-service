@@ -1,19 +1,23 @@
 package jammy.platform.resources;
 
 import io.quarkus.panache.common.Sort;
+import jakarta.annotation.security.RolesAllowed;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import jammy.platform.enums.SkillLevel;
+import jammy.platform.exceptions.ProfileAccessDeniedException;
 import jammy.platform.models.SearchFilter;
 import jammy.platform.requests.ProfileCreateRequest;
 import jammy.platform.requests.ProfileUpdateRequest;
+import jammy.platform.responses.MyProfileStatusResponse;
 import jammy.platform.responses.PagedResponse;
 import jammy.platform.responses.ProfileResponse;
 import jammy.platform.services.ProfileService;
 import java.util.List;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
+import org.eclipse.microprofile.jwt.JsonWebToken;
 
 @Path("/profiles")
 @Produces(MediaType.APPLICATION_JSON)
@@ -22,10 +26,14 @@ import lombok.AllArgsConstructor;
 public class ProfileController {
 
   private final ProfileService profileService;
+  private final JsonWebToken jwt;
 
   @POST
+  @RolesAllowed("USER")
   public Response createProfile(ProfileCreateRequest request) {
-    ProfileResponse response = profileService.create(request);
+    UUID userId = UUID.fromString(jwt.getSubject());
+
+    ProfileResponse response = profileService.create(userId, request);
 
     return Response.status(Response.Status.CREATED).entity(response).build();
   }
@@ -65,9 +73,18 @@ public class ProfileController {
   }
 
   @PUT
-  @Path("/{id}")
-  public Response update(@PathParam("id") UUID id, ProfileUpdateRequest request) {
-    ProfileResponse response = profileService.update(id, request);
+  @Path("/{profileId}")
+  @RolesAllowed("USER")
+  public Response update(@PathParam("profileId") UUID profileId, ProfileUpdateRequest request) {
+    UUID userIdFromToken = UUID.fromString(jwt.getSubject());
+    ProfileResponse response = profileService.update(userIdFromToken, profileId, request);
     return Response.ok().entity(response).build();
+  }
+
+  @GET
+  @Path("/me")
+  public UUID getMyProfile() {
+    UUID userIdFromToken = UUID.fromString(jwt.getSubject());
+    return profileService.findByUserId(userIdFromToken);
   }
 }

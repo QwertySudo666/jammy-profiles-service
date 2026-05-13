@@ -1,0 +1,23 @@
+-- CREATE TABLE profiles
+-- (
+--     id                  UUID PRIMARY KEY,
+--     name                VARCHAR(255) NOT NULL,
+--     location            VARCHAR(255),
+--     skill               VARCHAR(255),
+--     years_of_experience INTEGER CHECK (years_of_experience >= 0),
+--     description         TEXT,
+-- --                           created_at          TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+--     date_of_birth       TIMESTAMP
+-- );
+--
+-- CREATE TABLE instruments
+-- (
+--     id   UUID PRIMARY KEY,
+--     name VARCHAR(255) UNIQUE NOT NULL
+-- );
+--
+-- CREATE TABLE genres
+-- (
+--     id   UUID PRIMARY KEY,
+--     name VARCHAR(255) UNIQUE NOT NULL
+-- );
