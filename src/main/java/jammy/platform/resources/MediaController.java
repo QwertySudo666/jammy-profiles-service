@@ -6,7 +6,7 @@ import java.util.HashMap;
 import java.util.Map;
 import lombok.AllArgsConstructor;
 
-@Path("/media")
+@Path("/api/media")
 // @Produces(MediaType.APPLICATION_JSON)
 // @Consumes(MediaType.APPLICATION_JSON)
 @AllArgsConstructor

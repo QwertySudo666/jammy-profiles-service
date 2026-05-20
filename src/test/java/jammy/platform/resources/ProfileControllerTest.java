@@ -54,7 +54,7 @@ public class ProfileControllerTest {
   private final Set<UUID> createdInstrumentIds = new HashSet<>();
   private final Set<UUID> createdGenreIds = new HashSet<>();
 
-  private final String basicPath = "/profiles";
+  private final String basicPath = "api/profiles";
 
   @AfterEach
   void cleanup() {
