@@ -3,7 +3,7 @@ CREATE TYPE skill_level AS ENUM ('BEGINNER', 'INTERMEDIATE', 'ADVANCED', 'PROFES
 CREATE TABLE profiles
 (
     id                  UUID PRIMARY KEY,
-    user_id             UUID NOT NULL,
+    user_id             VARCHAR(255) NOT NULL,
     name                VARCHAR(255) NOT NULL,
     location            VARCHAR(255),
     skill               VARCHAR(255),

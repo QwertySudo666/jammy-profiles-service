@@ -77,7 +77,7 @@ public class ProfileControllerTest {
               ProfileEntity entity =
                   ProfileEntity.builder()
                       .id(UUID.randomUUID())
-                      .userId(UUID.fromString("123e4567-e89b-12d3-a456-426614174000"))
+                      .userId("123e4567-e89b-12d3-a456-426614174000")
                       .name(name)
                       .location("Lviv")
                       .skill(SkillLevel.INTERMEDIATE)

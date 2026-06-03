@@ -98,12 +98,12 @@ public class ProfileRepositoryImpl
   }
 
   @Override
-  public boolean existsByUserId(UUID userId) {
+  public boolean existsByUserId(String userId) {
     return count("userId", userId) > 0;
   }
 
   @Override
-  public Optional<ProfileEntity> findByUserId(UUID userId) {
+  public Optional<ProfileEntity> findByUserId(String userId) {
     return find("userId", userId).firstResultOptional();
   }
 }

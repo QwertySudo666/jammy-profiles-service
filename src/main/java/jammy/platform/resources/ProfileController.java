@@ -29,7 +29,8 @@ public class ProfileController {
   @POST
   @RolesAllowed("USER")
   public Response createProfile(ProfileCreateRequest request) {
-    UUID userId = UUID.fromString(jwt.getSubject());
+    String userId = jwt.getSubject();
+    System.out.println(jwt);
 
     ProfileResponse response = profileService.create(userId, request);
 
@@ -74,7 +75,7 @@ public class ProfileController {
   @Path("/{profileId}")
   @RolesAllowed("USER")
   public Response update(@PathParam("profileId") UUID profileId, ProfileUpdateRequest request) {
-    UUID userIdFromToken = UUID.fromString(jwt.getSubject());
+    String userIdFromToken = jwt.getSubject();
     ProfileResponse response = profileService.update(userIdFromToken, profileId, request);
     return Response.ok().entity(response).build();
   }
@@ -82,7 +83,9 @@ public class ProfileController {
   @GET
   @Path("/me")
   public UUID getMyProfile() {
-    UUID userIdFromToken = UUID.fromString(jwt.getSubject());
+    String userIdFromToken = jwt.getSubject();
+    System.out.println(jwt);
+
     return profileService.findByUserId(userIdFromToken);
   }
 }

@@ -19,7 +19,7 @@ public interface ProfileRepository {
 
   void delete(UUID profileId);
 
-  boolean existsByUserId(UUID userId);
+  boolean existsByUserId(String userId);
 
-  Optional<ProfileEntity> findByUserId(UUID userId);
+  Optional<ProfileEntity> findByUserId(String userId);
 }

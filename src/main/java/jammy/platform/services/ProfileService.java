@@ -42,7 +42,7 @@ public class ProfileService {
    * logic) owns the identity, not the database.
    */
   @Transactional
-  public ProfileResponse create(UUID userId, ProfileCreateRequest request) {
+  public ProfileResponse create(String userId, ProfileCreateRequest request) {
     if (profileRepository.existsByUserId(userId)) {
       throw new ProfileAlreadyExistsException();
     }
@@ -92,7 +92,7 @@ public class ProfileService {
   }
 
   @Transactional
-  public ProfileResponse update(UUID userId, UUID profileId, ProfileUpdateRequest request) {
+  public ProfileResponse update(String userId, UUID profileId, ProfileUpdateRequest request) {
     ProfileEntity existing = profileRepository.findById(profileId);
     if (existing == null) throw new NotFoundException("Not found");
     if (!existing.getUserId().equals(userId))
@@ -124,7 +124,7 @@ public class ProfileService {
     return mapToResponse(updated);
   }
 
-  public UUID findByUserId(UUID userId) {
+  public UUID findByUserId(String userId) {
     return profileRepository.findByUserId(userId).map(ProfileEntity::getId).orElse(null);
   }
 
@@ -135,7 +135,7 @@ public class ProfileService {
         .ifPresentOrElse(avatar -> avatar.setUrl(newUrl), () -> profile.setAvatar(newUrl));
   }
 
-  private static ProfileEntity mapToDomain(UUID userId, ProfileCreateRequest request) {
+  private static ProfileEntity mapToDomain(String userId, ProfileCreateRequest request) {
     String name = request.name();
     String location = request.location();
     SkillLevel skill = request.skill();
